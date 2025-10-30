@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WHERE ARE WE FROM</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        text-align: center;
+        background: linear-gradient(135deg, #031a22, #2980b9);
+        color: white;
+        padding: 40px;
+      }
+      #word {
+        font-size: 2em;
+        letter-spacing: 10px;
+        margin-top: 10px;
+      }
+      img {
+        width: 250px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-top: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+      input {
+        padding: 10px;
+        font-size: 1.2em;
+        text-transform: uppercase;
+        text-align: center;
+        width: 200px;
+        border-radius: 8px;
+        border: none;
+      }
+      button {
+        margin-left: 10px;
+        padding: 10px 15px;
+        font-size: 1em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #f39c12;
+        color: white;
+        font-weight: bold;
+      }
+      #message {
+        font-size: 1.2em;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>WHERE ARE WE FROM</h1>
+    <p>Bạn có <b id="tries">3</b> lần đoán sai tối đa!</p>
+    <div id="word">_ _ _ _ _</div>
+    <img id="hint" src="" alt="Gợi ý quốc gia" />
+    <br />
+    <input id="guess" placeholder="Nhập tên quốc gia" />
+    <button onclick="makeGuess()">Đoán</button>
+    <div id="message"></div>
+    <p>Điểm: <b id="score">0</b></p>
+
+    <script>
+      const words = [
+        "VIETNAM",
+        "MALAYSIA",
+        "THAILAND",
+        "CHINA",
+        "GERMANY",
+        "ENGLAND",
+        "CANADA",
+        "AMERICA",
+      ];
+
+      const imageMap = {
+        VIETNAM: "flag/VIETNAM.jpg",
+        MALAYSIA: "flag/MALAYSIA.jpg",
+        THAILAND: "flag/THAILAND.jpg",
+        CHINA: "flag/CHINA.jpg",
+        GERMANY: "flag/GERMANY.jpg",
+        ENGLAND: "flag/ENDLAND.jpg",
+        CANADA: "flag/CANADA.jpg",
+        AMERICA: "flag/AMERICAN.jpg",
+      };
+
+      let maxTries = 3;
+      let wrong = 0;
+      let score = 0;
+      let word = "";
+      let guessed = [];
+
+      function startGame() {
+        wrong = 0;
+        document.getElementById("tries").textContent = maxTries - wrong;
+
+        word = words[Math.floor(Math.random() * words.length)];
+        guessed = Array(word.length).fill("_");
+
+        document.getElementById("hint").src = imageMap[word];
+
+        updateDisplay();
+        document.getElementById().textContent = `Từ này có ${word.length} chữ cái.`;
+      }
+
+      function updateDisplay() {
+        document.getElementById("word").textContent = guessed.join(" ");
+        document.getElementById("score").textContent = score;
+        document.getElementById("tries").textContent = maxTries - wrong;
+      }
+
+      function makeGuess() {
+        const input = document.getElementById("guess");
+        let guess = input.value.toUpperCase().trim();
+        input.value = "";
+
+        if (guess === "") {
+          document.getElementById("message").textContent =
+            "❗ Vui lòng nhập chữ!";
+          return;
+        }
+
+        if (guess.length > 1) {
+          if (guess === word) {
+            guessed = word.split("");
+            score++;
+            document.getElementById(
+              "message"
+            ).textContent = `🎉 Chính xác! Từ là: ${word}`;
+            updateDisplay();
+            setTimeout(startGame, 2500);
+          } else {
+            wrong++;
+            document.getElementById("message").textContent = `❌ Sai rồi! Còn ${
+              maxTries - wrong
+            } lần đoán.`;
+          }
+        } else {
+          let found = false;
+          for (let i = 0; i < word.length; i++) {
+            if (word[i] === guess && guessed[i] === "_") {
+              guessed[i] = guess;
+              found = true;
+            }
+          }
+
+          if (!found) {
+            wrong++;
+            document.getElementById("message").textContent = `Sai rồi! Còn ${
+              maxTries - wrong
+            } lần đoán.`;
+          } else {
+            document.getElementById("message").textContent = "✅ Đúng rồi!";
+          }
+
+          if (!guessed.includes("_")) {
+            score++;
+            document.getElementById(
+              "message"
+            ).textContent = `🎉 Bạn đoán đúng: ${word}`;
+            setTimeout(startGame, 2500);
+          }
+        }
+
+        if (wrong >= maxTries) {
+          document.getElementById(
+            "message"
+          ).textContent = `😢 Bạn thua! Từ đúng là: ${word}`;
+          score = 0;
+          setTimeout(startGame, 3000);
+        }
+
+        updateDisplay();
+      }
+
+      startGame();
+    </script>
+  </body>
+</html>
